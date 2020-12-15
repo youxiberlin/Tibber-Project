@@ -1,21 +1,32 @@
 import React from "react"
 import { render } from "react-dom"
-import { getName } from "../lib/api"
+import { getName, getCurrentSub } from "../lib/api"
 
-function App({ allPosts }) {
-  const data = allPosts
-  console.log("data", data)
+function App({ username, currentSub }) {
   return (
     <div>
-      <h2>My first Apollo app 🚀</h2>
+      <h2>Tibber Project 🚀</h2>
+      <h3>username: {username}</h3>
+      {currentSub.map(v => {
+          return (
+              <div>
+                  <div>current</div>
+                  <div>Energy: {v.currentSubscription.priceInfo.current.energy}</div>
+                  <div>StartsAt: {v.currentSubscription.priceInfo.current.startsAt}</div>
+                  <div>Tax: {v.currentSubscription.priceInfo.current.tax}</div>
+                  <div>Total: {v.currentSubscription.priceInfo.current.total}</div>
+              </div>
+        )
+      })}
     </div>
   )
 }
 
 export async function getStaticProps({ preview = false }) {
-  const allPosts = (await getName()) || []
+  const username = (await getName()) || []
+  const currentSub = (await getCurrentSub()) || []
   return {
-    props: { allPosts },
+    props: { username, currentSub },
   }
 }
 
