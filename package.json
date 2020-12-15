@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "prettier --write **/*.js",
+    "lint:check": "prettier --check **/*.js"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
@@ -14,5 +16,12 @@
     "next": "^10.0.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
+  },
+  "devDependencies": {
+    "prettier": "2.2.1"
+  },
+  "prettier": {
+    "semi": false,
+    "arrowParens": "avoid"
   }
 }
