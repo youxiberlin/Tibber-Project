@@ -1,4 +1,4 @@
-## Tibber PRoject
+## Tibber Project
 
 ## How to run
 
@@ -8,7 +8,7 @@ $ git clone git@github.com:youxiberlin/Tibber-Project.git
 or 
 $ git clone https://github.com/youxiberlin/Tibber-Project.git
 
-// go to the project  folder
+// go to the project folder
 $ cd tibber-project
 
 // install all the packages
