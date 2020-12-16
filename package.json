@@ -11,11 +11,15 @@
     "lint:check": "prettier --check **/*.js"
   },
   "dependencies": {
+    "@emotion/react": "^11.1.2",
+    "@rebass/preset": "^4.0.5",
     "dotenv": "^8.2.0",
     "graphql": "^15.4.0",
+    "moment": "^2.29.1",
     "next": "^10.0.3",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "rebass": "^4.0.7"
   },
   "devDependencies": {
     "prettier": "2.2.1"
