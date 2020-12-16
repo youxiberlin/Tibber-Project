@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import numeral from 'numeral';
 import moment from 'moment';
 moment.locale("en");
 import { render } from "react-dom";
@@ -14,27 +15,51 @@ import {
 } from 'rebass'
 import { getName, getSub } from "../lib/api"
 
-const calcPrice = async ( {
-    startAt = Date.now(),
-    sub,
-    mins,
-    temp,
-  } ) => {
-
-  const currHour = moment(startAt).hour()
-  const curr = sub.today[currHour - 1]
-  const currPrice = curr.total * ( mins / 60 )
-  console.log('curr', curr)
-  console.log('price', currPrice)
-
-  console.log(sub)
-
-  return currPrice;
+const makeMinsArr = (totalMins, startTime) => {
+	const startMin = moment(startTime).minute();
+	const arr = [];
+	const firstMins = 60 - startMin;
+	const arrNum = Math.ceil((totalMins - firstMins) / 60);
+	let restMins = totalMins - firstMins;
+	arr.push(firstMins)
+	for (let i = 0; i < arrNum; i++) {
+		if (restMins > 60) {
+			arr.push(60)
+			restMins = restMins - 60;
+		} else {
+			arr.push(restMins)
+		}
+	}
+	return arr;
 }
+
+const calcTotal = (priceArr, totalMins) => {
+	const minsArr = makeMinsArr(totalMins, Date.now())
+	const pricePerMin = priceArr.map(v => v / 60)
+	const total = minsArr.reduce((acc, curr, i) => {
+		const hourPrice = curr * pricePerMin[i]
+		acc += hourPrice;
+		return acc;
+  }, 0)
+  return numeral(total).format('0.000')
+}
+
+const calcPrice = async ( {
+  startAt = Date.now(),
+  sub,
+  mins,
+  temp,
+} ) => {
+  const currHour = moment(startAt).hour()
+  const subArr = !sub.tomorrow.length ? sub.today.slice(currHour - 1) : sub.today.slice(currHour - 1).concat(sub.tomorrow)
+  const priceArr = subArr.map(v => v.total)
+  const totalPrice = calcTotal(priceArr, mins)
+  return totalPrice;
+}
+
 
 const App = ({ username, sub }) => {
   const [currPrice, setCurrPrice] = useState(null);
-  console.log('price in app', currPrice)
   return (
     <ThemeProvider theme={theme}>
         <h2>Tibber Project 🚀</h2>
