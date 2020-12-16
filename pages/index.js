@@ -72,6 +72,7 @@ const App = ({ username, sub }) => {
           });
           setCurrPrice(price);
         }}>Wash now</Button>
+        <h3>Laundry for 90 mins</h3>
         <h3>Current Price: {currPrice} NOK</h3>
     </ThemeProvider>
   )
