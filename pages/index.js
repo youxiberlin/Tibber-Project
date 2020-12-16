@@ -15,33 +15,41 @@ import {
 } from 'rebass'
 import { getName, getSub } from "../lib/api"
 
-const makeMinsArr = (totalMins, startTime) => {
-	const startMin = moment(startTime).minute();
-	const arr = [];
-	const firstMins = 60 - startMin;
-	const arrNum = Math.ceil((totalMins - firstMins) / 60);
-	let restMins = totalMins - firstMins;
-	arr.push(firstMins)
-	for (let i = 0; i < arrNum; i++) {
-		if (restMins > 60) {
-			arr.push(60)
-			restMins = restMins - 60;
-		} else {
-			arr.push(restMins)
-		}
-	}
-	return arr;
+const intensityTable = {
+  '60': 0.66,
+  '90': 1.2,
+  '40': 0.32,
+  '30': 0.26,
 }
 
-const calcTotal = (priceArr, totalMins) => {
-	const minsArr = makeMinsArr(totalMins, Date.now())
-	const pricePerMin = priceArr.map(v => v / 60)
-	const total = minsArr.reduce((acc, curr, i) => {
-		const hourPrice = curr * pricePerMin[i]
-		acc += hourPrice;
-		return acc;
+const makeMinsArr = (totalMins, startTime) => {
+  const startMin = moment(startTime).minute();
+  const arr = [];
+  const firstMins = 60 - startMin;
+  const arrNum = Math.ceil((totalMins - firstMins) / 60);
+  let restMins = totalMins - firstMins;
+  arr.push(firstMins)
+  for (let i = 0; i < arrNum; i++) {
+    if (restMins > 60) {
+      arr.push(60)
+      restMins = restMins - 60;
+    } else {
+      arr.push(restMins)
+    }
+  }
+  return arr;
+}
+
+const calcTotal = (priceArr, totalMins, temp) => {
+  const intensity = intensityTable[temp]
+  const minsArr = makeMinsArr(totalMins, Date.now())
+  const pricePerMin = priceArr.map(v => v / 60)
+  const total = minsArr.reduce((acc, curr, i) => {
+    const hourPrice = curr * pricePerMin[i]
+    acc += hourPrice;
+    return acc;
   }, 0)
-  return numeral(total).format('0.000')
+  return numeral(total * intensity).format('0.000') 
 }
 
 const calcPrice = async ( {
@@ -53,10 +61,9 @@ const calcPrice = async ( {
   const currHour = moment(startAt).hour()
   const subArr = !sub.tomorrow.length ? sub.today.slice(currHour - 1) : sub.today.slice(currHour - 1).concat(sub.tomorrow)
   const priceArr = subArr.map(v => v.total)
-  const totalPrice = calcTotal(priceArr, mins)
+  const totalPrice = calcTotal(priceArr, mins, temp)
   return totalPrice;
 }
-
 
 const App = ({ username, sub }) => {
   const [currPrice, setCurrPrice] = useState(null);
@@ -72,7 +79,7 @@ const App = ({ username, sub }) => {
           });
           setCurrPrice(price);
         }}>Wash now</Button>
-        <h3>Laundry for 90 mins</h3>
+        <h3>Laundry for 90 mins, 60c</h3>
         <h3>Current Price: {currPrice} NOK</h3>
     </ThemeProvider>
   )
